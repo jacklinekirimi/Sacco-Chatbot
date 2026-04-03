@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AminiAssist | Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Sora', sans-serif; }
+
+    body { background: #f1f5f9; }
+
+    /* Sidebar gradient */
+    .sidebar {
+      background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 50%, #000000 100%);
+    }
+
+    /* Chat bubble animations */
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .bubble { animation: bubbleIn 0.25s ease forwards; }
+
+    /* Typing dots */
+    @keyframes dot { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+    .dot { width:7px; height:7px; border-radius:50%; background:#6366f1; display:inline-block; margin:0 2px; }
+    .dot:nth-child(1){animation:dot 1.2s infinite 0s}
+    .dot:nth-child(2){animation:dot 1.2s infinite 0.2s}
+    .dot:nth-child(3){animation:dot 1.2s infinite 0.4s}
+
+    /* Scrollbar */
+    #chatMessages::-webkit-scrollbar { width: 4px; }
+    #chatMessages::-webkit-scrollbar-track { background: transparent; }
+    #chatMessages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+    /* Input focus ring */
+    #messageInput:focus { outline: none; box-shadow: 0 0 0 2px #6366f1; }
+
+    /* Send button */
+    .send-btn {
+      background: linear-gradient(135deg, #6366f1, #3b82f6);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .send-btn:hover { transform: scale(1.07); box-shadow: 0 4px 18px rgba(99,102,241,0.45); }
+    .send-btn:active { transform: scale(0.97); }
+
+    /* Quick suggestion chips */
+    .chip {
+      border: 1px solid #c7d2fe;
+      color: #4f46e5;
+      background: #eef2ff;
+      transition: background 0.15s, color 0.15s;
+      cursor: pointer;
+    }
+    .chip:hover { background: #6366f1; color: white; border-color: #6366f1; }
+
+    /* History item active */
+    .history-item { transition: background 0.15s; cursor: pointer; }
+    .history-item:hover { background: rgba(255,255,255,0.08); }
+    .history-item.active { background: rgba(255,255,255,0.12); border-left: 3px solid #6366f1; }
+
+    /* Welcome fade in */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    #welcomeState { animation: fadeUp 0.4s ease forwards; }
+  </style>
+</head>
+
+<body class="h-screen overflow-hidden">
+<div class="flex h-full">
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="sidebar w-72 flex flex-col text-white flex-shrink-0">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
+      <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-lg">
+       <a href="../index.html"><img
+    src="../images/Untitled design (2).png"
+    alt="AminiAssist Logo"
+    class="w-10 h-10 rounded-lg "
+  /></a> 
+      </div>
+      <span class="text-lg font-semibold tracking-tight">AminiAssist</span>
+    </div>
+
+    <!-- New Chat -->
+    <div class="px-5 py-4">
+      <button onclick="startNewChat()"
+        class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl
+               border border-white/20 text-white/80 text-sm
+               hover:border-white/50 hover:bg-white/5 hover:text-white transition">
+        <span class="text-base font-light">＋</span>
+        <span>New Chat</span>
+      </button>
+    </div>
+
+    <!-- Chat History -->
+    <div class="px-4 flex-1 overflow-y-auto">
+      <p class="text-xs uppercase tracking-widest text-slate-500 mb-3 px-2">Recent</p>
+      <ul id="historyList" class="space-y-1 text-slate-300 text-sm">
+        <!-- Populated by JS -->
+      </ul>
+    </div>
+
+    <!-- User info + logout -->
+    <div class="px-5 py-4 border-t border-white/10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div id="sidebarAvatar"
+               class="w-8 h-8 rounded-full bg-indigo-500/30 border border-indigo-400/40
+                      flex items-center justify-center text-sm font-semibold text-indigo-300">
+            ?
+          </div>
+          <span id="sidebarName" class="text-sm text-slate-300">Guest</span>
+        </div>
+        <button onclick="logout()" class="text-xs text-slate-500 hover:text-red-400 transition">
+          Log out
+        </button>
+      </div>
+      <p class="text-xs text-slate-600 mt-3">© 2026 AminiAssist</p>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ MAIN CHAT ═══════════════ -->
+  <main class="flex-1 flex flex-col bg-slate-50 min-w-0">
+
+    <!-- Top Bar -->
+    <header class="flex items-center justify-between px-6 py-4
+                   border-b border-slate-200 bg-white shadow-sm flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span class="text-sm text-slate-500 font-medium">SACCO Assistant</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="headerAvatar"
+             class="w-8 h-8 bg-indigo-100 text-indigo-700 rounded-full
+                    flex items-center justify-center font-semibold text-sm">
+          ?
+        </div>
+        <span id="headerName" class="text-slate-700 text-sm font-medium">Guest</span>
+      </div>
+    </header>
+
+    <!-- Messages Area -->
+    <div id="chatMessages" class="flex-1 overflow-y-auto px-6 py-6 space-y-4">
+
+      <!-- Welcome State -->
+      <div id="welcomeState" class="max-w-lg mx-auto text-center mt-16">
+        <div class="text-4xl mb-4"></div>
+        <h2 class="text-xl font-semibold text-slate-700 mb-2">Welcome to AminiAssist!</h2>
+        <p class="text-sm text-slate-400 mb-8">
+          Ask anything about your SACCO—loans, savings, and more.
+        </p>
+
+        <!-- Quick suggestions -->
+        <div class="flex flex-wrap gap-2 justify-center">
+          <button onclick="sendQuick('What is my loan balance?')"
+                  class="chip text-xs px-4 py-2 rounded-full font-medium">
+             Loan Balance
+          </button>
+          <button onclick="sendQuick('What are my savings?')"
+                  class="chip text-xs px-4 py-2 rounded-full font-medium">
+             My Savings
+          </button>
+          <button onclick="sendQuick('Am I eligible for a loan?')"
+                  class="chip text-xs px-4 py-2 rounded-full font-medium">
+            Loan Eligibility
+          </button>
+          <button onclick="sendQuick('Can I get a loan top-up?')"
+                  class="chip text-xs px-4 py-2 rounded-full font-medium">
+            Loan Top-up
+          </button>
+          <button onclick="sendQuick('What are your interest rates?')"
+                  class="chip text-xs px-4 py-2 rounded-full font-medium">
+            Interest Rates
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Input Area -->
+    <div class="bg-white border-t border-slate-200 px-6 py-4 flex-shrink-0">
+      <div class="flex items-center gap-3 max-w-4xl mx-auto">
+        <input
+          id="messageInput"
+          type="text"
+          placeholder="Type your message..."
+          class="flex-1 px-5 py-3 rounded-full border border-slate-300 text-sm text-slate-700
+                 bg-slate-50 transition"
+          onkeydown="handleKey(event)"
+        />
+        <button onclick="sendMessage()"
+                class="send-btn w-11 h-11 flex items-center justify-center rounded-full text-white shadow-md flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 ml-0.5">
+            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+          </svg>
+        </button>
+      </div>
+      <p class="text-center text-xs text-slate-400 mt-2">AminiAssist may make mistakes. Verify important info with SACCO staff.</p>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+  // ── Config ────────────────────────────────────────────────
+  // IMPORTANT: Replace with your actual Dialogflow project ID and region
+  const DIALOGFLOW_PROJECT_ID = 'magerezasaccochatbot-xfjb'; // e.g. 'magerezasacco-xxxx'
+  const BACKEND_URL = 'http://localhost:3000';
+
+  // ── State ─────────────────────────────────────────────────
+  let sessionId = null;
+  let chatHistory = [];
+  let isTyping = false;
+
+  // ── Init ──────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    // Load user info from localStorage
+    const userId    = localStorage.getItem('userId');
+    const firstName = localStorage.getItem('userFirstName') || 'Member';
+
+    // Update UI with user's name
+    const initial = firstName.charAt(0).toUpperCase();
+    document.getElementById('sidebarAvatar').textContent = initial;
+    document.getElementById('sidebarName').textContent   = firstName;
+    document.getElementById('headerAvatar').textContent  = initial;
+    document.getElementById('headerName').textContent    = firstName;
+
+    // Create a session ID using the real userId so webhook can identify member
+    sessionId = userId
+      ? `projects/${DIALOGFLOW_PROJECT_ID}/agent/sessions/${userId}-${Date.now()} `
+      : `projects/${DIALOGFLOW_PROJECT_ID}/agent/sessions/guest-${Date.now()}`;
+
+    // Load chat history from localStorage
+    loadHistory();
+
+    // Focus input
+    document.getElementById('messageInput').focus();
+  });
+
+  // ── Send message ──────────────────────────────────────────
+  async function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const text  = input.value.trim();
+    if (!text || isTyping) return;
+
+    input.value = '';
+    hideWelcome();
+    appendMessage('user', text);
+    showTyping();
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/dialogflow`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, sessionId })
+      });
+
+      const data = await response.json();
+      hideTyping();
+
+      const botReply = data.fulfillmentText || "I'm sorry, I didn't get that. Please try again.";
+      appendMessage('bot', botReply);
+      saveToHistory(text);
+
+    } catch (err) {
+      hideTyping();
+      appendMessage('bot', "⚠️ Connection error. Please make sure the server is running.");
+      console.error('Chat error:', err);
+    }
+  }
+
+  // ── Quick suggestion ──────────────────────────────────────
+  function sendQuick(text) {
+    document.getElementById('messageInput').value = text;
+    sendMessage();
+  }
+
+  // ── Handle Enter key ──────────────────────────────────────
+  function handleKey(e) {
+    if (e.key === 'Enter') sendMessage();
+  }
+
+  // ── Append message bubble ─────────────────────────────────
+  function appendMessage(role, text) {
+    const container = document.getElementById('chatMessages');
+    const isBot = role === 'bot';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = `flex ${isBot ? 'justify-start' : 'justify-end'} bubble`;
+
+    const bubble = document.createElement('div');
+    bubble.className = isBot
+      ? 'max-w-md bg-white border border-slate-200 text-slate-700 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm text-sm leading-relaxed'
+      : 'max-w-md bg-indigo-600 text-white px-4 py-3 rounded-2xl rounded-tr-sm text-sm leading-relaxed';
+
+    if (isBot) {
+      // Add bot avatar
+      const avatarWrap = document.createElement('div');
+      avatarWrap.className = 'flex items-end gap-2';
+      const avatar = document.createElement('div');
+      avatar.className = 'w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-xs flex-shrink-0 mb-0.5';
+      avatar.textContent = '🤖';
+      bubble.innerHTML = text
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/\n/g, '<br>');
+      avatarWrap.appendChild(avatar);
+      avatarWrap.appendChild(bubble);
+      wrapper.appendChild(avatarWrap);
+    } else {
+      bubble.textContent = text;
+      wrapper.appendChild(bubble);
+    }
+
+    container.appendChild(wrapper);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ── Typing indicator ──────────────────────────────────────
+  function showTyping() {
+    isTyping = true;
+    const container = document.getElementById('chatMessages');
+    const el = document.createElement('div');
+    el.id = 'typingIndicator';
+    el.className = 'flex justify-start bubble';
+    el.innerHTML = `
+      <div class="flex items-end gap-2">
+        <div class="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
+        <div class="bg-white border border-slate-200 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+          <div class="flex items-center gap-1 h-4">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(el);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function hideTyping() {
+    isTyping = false;
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+  }
+
+  // ── Welcome state ─────────────────────────────────────────
+  function hideWelcome() {
+    const el = document.getElementById('welcomeState');
+    if (el) el.remove();
+  }
+
+  // ── Chat history ──────────────────────────────────────────
+let currentSessionSaved = false;
+let currentSessionKey = null; // unique key for this conversation
+
+function saveToHistory(text) {
+  // Generate a session key for this conversation
+  if (!currentSessionKey) {
+    currentSessionKey = `session-${Date.now()}`;
+  }
+
+  const maxLen = 30;
+  const label = text.length > maxLen ? text.substring(0, maxLen) + '…' : text;
+
+  // Save session label to history list (only first message)
+  if (!currentSessionSaved) {
+    currentSessionSaved = true;
+    chatHistory.unshift({ key: currentSessionKey, label });
+    if (chatHistory.length > 8) chatHistory.pop();
+    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    renderHistory();
+  }
+
+  // Save full messages of this conversation
+  const container = document.getElementById('chatMessages');
+  localStorage.setItem(currentSessionKey, container.innerHTML);
+}
+
+function loadHistory() {
+  const saved = localStorage.getItem('chatHistory');
+  if (saved) {
+    chatHistory = JSON.parse(saved);
+    renderHistory();
+  }
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  list.innerHTML = '';
+  chatHistory.forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'history-item px-3 py-2 rounded-lg text-slate-300 text-sm truncate';
+    li.textContent = item.label;
+    li.onclick = () => openSession(item.key, li);
+    list.appendChild(li);
+  });
+}
+
+function openSession(key, clickedEl) {
+  // Highlight active item
+  document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+  clickedEl.classList.add('active');
+
+  // Load saved messages for this session
+  const savedHTML = localStorage.getItem(key);
+  const container = document.getElementById('chatMessages');
+
+  if (savedHTML) {
+    container.innerHTML = savedHTML;
+    container.scrollTop = container.scrollHeight;
+
+    // Switch session so new messages go into this session
+    currentSessionKey = key;
+    currentSessionSaved = true; // don't create a new history entry
+  } else {
+    alert('No messages found for this conversation.');
+  }
+}
+
+  // ── New chat ──────────────────────────────────────────────
+  function startNewChat() {
+    currentSessionSaved = false;
+     currentSessionKey = null;
+    // Clear messages except welcome
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = `
+      <div id="welcomeState" class="max-w-lg mx-auto text-center mt-16" style="animation: fadeUp 0.4s ease forwards;">
+        <div class="text-4xl mb-4"></div>
+        <h2 class="text-xl font-semibold text-slate-700 mb-2">Welcome to AminiAssist</h2>
+        <p class="text-sm text-slate-400 mb-8">Your intelligent SACCO assistant. Ask about loans, savings, balances, or anything SACCO-related.</p>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <button onclick="sendQuick('What is my loan balance?')" class="chip text-xs px-4 py-2 rounded-full font-medium">Loan Balance</button>
+          <button onclick="sendQuick('What are my savings?')" class="chip text-xs px-4 py-2 rounded-full font-medium">My Savings</button>
+          <button onclick="sendQuick('Am I eligible for a loan?')" class="chip text-xs px-4 py-2 rounded-full font-medium">Loan Eligibility</button>
+          <button onclick="sendQuick('Can I get a loan top-up?')" class="chip text-xs px-4 py-2 rounded-full font-medium">Loan Top-up</button>
+          <button onclick="sendQuick('What are your interest rates?')" class="chip text-xs px-4 py-2 rounded-full font-medium">Interest Rates</button>
+        </div>
+      </div>`;
+
+    // Reset session
+    const userId = localStorage.getItem('userId');
+  sessionId = userId
+    ? `projects/${DIALOGFLOW_PROJECT_ID}/agent/sessions/${userId}-${Date.now()}`
+    : `projects/${DIALOGFLOW_PROJECT_ID}/agent/sessions/guest-${Date.now()}`;
+
+  console.log('New session ID:', sessionId);
+
+    document.getElementById('messageInput').focus();
+  }
+
+  // ── Logout ────────────────────────────────────────────────
+  function logout() {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userFirstName');
+    localStorage.removeItem('chatHistory');
+
+    window.location.href = 'auth/log-in.html';
+  }
+</script>
+
+</body>
+</html>

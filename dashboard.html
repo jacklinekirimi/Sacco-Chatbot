@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AminiAssist | Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Sora', sans-serif; }
+ 
+    .sidebar {
+      background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 50%, #000000 100%);
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .stat-card { animation: fadeUp 0.4s ease forwards; }
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.2s; }
+ 
+    .nav-item { transition: background 0.15s, color 0.15s; cursor: pointer; }
+    .nav-item:hover { background: rgba(255,255,255,0.08); }
+    .nav-item.active {
+      background: rgba(99,102,241,0.25);
+      border-left: 3px solid #6366f1;
+      color: white;
+    }
+ 
+    .table-row { transition: background 0.15s; }
+    .table-row:hover { background: #f8fafc; }
+ 
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+ 
+    .badge-loan { background: #dbeafe; color: #2563eb; }
+    .badge-no-loan { background: #f1f5f9; color: #64748b; }
+    .badge-active { background: #dcfce7; color: #16a34a; }
+    .badge-completed { background: #f1f5f9; color: #64748b; }
+    .badge-defaulted { background: #fee2e2; color: #dc2626; }
+ 
+    .section { display: none; }
+    .section.active { display: block; animation: fadeUp 0.3s ease forwards; }
+ 
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid #e2e8f0;
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+ 
+    .chat-card { border-left: 3px solid #6366f1; transition: box-shadow 0.15s; }
+    .chat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+ 
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .modal-box { animation: modalIn 0.2s ease forwards; }
+  </style>
+</head>
+ 
+<body class="h-screen overflow-hidden bg-slate-100">
+<div class="flex h-full">
+ 
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="sidebar w-64 flex flex-col text-white flex-shrink-0">
+ 
+    <!-- Logo -->
+    <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
+      <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center">
+        <img src="../images/Untitled design (2).png" alt="AminiAssist Logo" class="w-10 h-10 rounded-lg" />
+      </div>
+      <div>
+        <span class="text-lg font-semibold tracking-tight">AminiAssist</span>
+        <p class="text-xs text-indigo-300">Admin Panel</p>
+      </div>
+    </div>
+ 
+    <!-- Nav -->
+    <nav class="px-4 py-6 flex-1 space-y-1">
+      <p class="text-xs uppercase tracking-widest text-slate-500 mb-3 px-3">Navigation</p>
+      <div class="nav-item active px-3 py-2.5 rounded-lg text-sm flex items-center gap-3" onclick="showSection('overview')">
+        <img src="images/icons/dashboard.png" class="w-5 h-5" /> Dashboard
+      </div>
+      <div class="nav-item px-3 py-2.5 rounded-lg text-slate-300 text-sm flex items-center gap-3" onclick="showSection('members')">
+        <img src="images/icons/people.png" class="w-5 h-5" style="filter: invert(1)" /> Members
+      </div>
+      <div class="nav-item px-3 py-2.5 rounded-lg text-slate-300 text-sm flex items-center gap-3" onclick="showSection('loans')">
+       <img src="images/icons/loans.png" class="w-5 h-5" style="filter: invert(1)" /> Loans
+      </div>
+      <div class="nav-item px-3 py-2.5 rounded-lg text-slate-300 text-sm flex items-center gap-3" onclick="showSection('loantypes')">
+       <img src="images/icons/directions.png" class="w-5 h-5" style="filter: invert(1)" /> Loan Types
+      </div>
+      <div class="nav-item px-3 py-2.5 rounded-lg text-slate-300 text-sm flex items-center gap-3" onclick="showSection('chatlogs')">
+        <span>💬</span> Chat Logs
+      </div>
+    </nav>
+ 
+    <!-- Admin info -->
+    <div class="px-5 py-4 border-t border-white/10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div id="adminAvatar" class="w-8 h-8 rounded-full bg-indigo-500/30 border border-indigo-400/40 flex items-center justify-center text-sm font-semibold text-indigo-300">A</div>
+          <div>
+            <p id="adminName" class="text-sm text-slate-300">Admin</p>
+            <p class="text-xs text-slate-500">Administrator</p>
+          </div>
+        </div>
+        <button onclick="logout()" class="text-xs text-slate-500 hover:text-red-400 transition">Logout</button>
+      </div>
+    </div>
+  </aside>
+ 
+  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+ 
+    <!-- Top Bar -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+      <div>
+        <h1 id="pageTitle" class="text-lg font-semibold text-slate-800">Overview</h1>
+        <p class="text-xs text-slate-400">Magereza SACCO · AminiAssist</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span class="text-xs text-slate-500">System Online</span>
+      </div>
+    </header>
+ 
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto px-6 py-6">
+ 
+      <!-- ── OVERVIEW ── -->
+      <div id="section-overview" class="section active">
+        <div class="grid grid-cols-4 gap-4 mb-8">
+          <div class="stat-card bg-blue-900 rounded-2xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-3">
+              <img src="images/icons/people 1.png" class="w-8 h-8" style="filter: invert(1)" />
+              <span class="text-xs text-slate-100 font-medium uppercase tracking-wider">Members</span>
+            </div>
+            <p id="statMembers" class="text-3xl font-bold text-slate-100">—</p>
+            <p class="text-xs text-slate-100 mt-1">Registered members</p>
+          </div>
+          <div class="stat-card bg-blue-900 rounded-2xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-3">
+              <img src="images/icons/loans.png" class="w-8 h-8" style="filter: invert(1)" />
+              <span class="text-xs text-slate-100 font-medium uppercase tracking-wider">Loans</span>
+            </div>
+            <p id="statLoans" class="text-3xl font-bold text-slate-100">—</p>
+            <p class="text-xs text-slate-100 mt-1">Active loans</p>
+          </div>
+          <div class="stat-card bg-blue-900 rounded-2xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-3">
+              <img src="images/icons/savings.png" class="w-8 h-8" style="filter: invert(1)" />
+              <span class="text-xs text-slate-100 font-medium uppercase tracking-wider">Savings</span>
+            </div>
+            <p id="statSavings" class="text-3xl font-bold text-slate-100">—</p>
+            <p class="text-xs text-slate-100 mt-1">Total savings (KES)</p>
+          </div>
+          <div class="stat-card bg-blue-900 rounded-2xl p-5 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-2xl">💬</span>
+              <span class="text-xs text-slate-100 font-medium uppercase tracking-wider">Chats</span>
+            </div>
+            <p id="statChats" class="text-3xl font-bold text-slate-100">—</p>
+            <p class="text-xs text-slate-100 mt-1">Total chat interactions</p>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-slate-700">Recent Chat Logs</h2>
+            <button onclick="showSection('chatlogs')" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition">View all →</button>
+          </div>
+          <div id="recentChats">
+            <div class="flex items-center gap-2 text-slate-400 text-sm"><span class="spinner"></span> Loading...</div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- ── MEMBERS ── -->
+      <div id="section-members" class="section">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="font-semibold text-slate-700">All Members</h2>
+            <span id="membersCount" class="text-xs text-slate-400"></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-slate-100">
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Member</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Membership No.</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Email</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Savings</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Loan Status</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Joined</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="membersTable">
+                <tr><td colspan="7" class="px-6 py-8 text-center text-slate-400"><span class="spinner"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- ── LOANS ── -->
+      <div id="section-loans" class="section">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="font-semibold text-slate-700">All Loans</h2>
+            <span id="loansCount" class="text-xs text-slate-400"></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-slate-100">
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Member</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Loan Type</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Principal</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Outstanding</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Period</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Due Date</th>
+                </tr>
+              </thead>
+              <tbody id="loansTable">
+                <tr><td colspan="7" class="px-6 py-8 text-center text-slate-400"><span class="spinner"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- ── LOAN TYPES ── -->
+      <div id="section-loantypes" class="section">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="font-semibold text-slate-700">Loan Types</h2>
+            <button onclick="openAddLoanTypeModal()"
+                    class="text-xs bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-medium">
+              + Add Loan Type
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-slate-100">
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Loan Type</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Interest Rate</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Max Amount (KES)</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Max Period</th>
+                  <th class="text-left px-6 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="loanTypesTable">
+                <tr><td colspan="5" class="px-6 py-8 text-center text-slate-400"><span class="spinner"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- ── CHAT LOGS ── -->
+      <div id="section-chatlogs" class="section">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-semibold text-slate-700">Chat Logs</h2>
+            <span id="chatlogsCount" class="text-xs text-slate-400"></span>
+          </div>
+          <div id="chatlogsContainer" class="space-y-3">
+            <div class="flex items-center gap-2 text-slate-400 text-sm"><span class="spinner"></span> Loading...</div>
+          </div>
+        </div>
+      </div>
+ 
+    </div>
+  </main>
+</div>
+ 
+<!-- ═══════════════ MODALS ═══════════════ -->
+ 
+<!-- Confirm Delete Modal -->
+<div id="deleteModal" class="modal-overlay">
+  <div class="modal-box bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
+    <div class="text-center mb-5">
+      <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+        <span class="text-2xl">🗑️</span>
+      </div>
+      <h3 class="font-semibold text-slate-800 text-lg">Confirm Delete</h3>
+      <p id="deleteMessage" class="text-sm text-slate-500 mt-1"></p>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="closeModal('deleteModal')"
+              class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50 transition">
+        Cancel
+      </button>
+      <button id="confirmDeleteBtn"
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+ 
+<!-- View Member Modal -->
+<div id="viewMemberModal" class="modal-overlay fixed inset-0 z-50 p-4">
+  <div class="modal-box bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-semibold text-slate-800 text-lg">Member Details</h3>
+      <button onclick="closeModal('viewMemberModal')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+    </div>
+    <div id="memberDetailsContent"></div>
+  </div>
+</div>
+ 
+
+<!-- Add / Edit Loan Type Modal -->
+<div id="loanTypeModal" class="modal-overlay">
+  <div class="modal-box bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-5">
+      <h3 id="loanTypeModalTitle" class="font-semibold text-slate-800 text-lg">Add Loan Type</h3>
+      <button onclick="closeModal('loanTypeModal')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+    </div>
+    <div class="space-y-4">
+      <input type="hidden" id="loanTypeId" />
+      <div>
+        <label class="text-xs font-medium text-slate-600 block mb-1">Loan Type Name</label>
+        <input id="ltName" type="text" placeholder="e.g. Normal Loan"
+               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600 block mb-1">Interest Rate (% per annum)</label>
+        <input id="ltRate" type="number" step="0.01" placeholder="e.g. 12"
+               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600 block mb-1">Maximum Amount (KES)</label>
+        <input id="ltMaxAmount" type="number" placeholder="e.g. 500000"
+               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600 block mb-1">Maximum Period (Months)</label>
+        <input id="ltMaxPeriod" type="number" placeholder="e.g. 48"
+               class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeModal('loanTypeModal')"
+                class="flex-1 px-4 py-2 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50 transition">
+          Cancel
+        </button>
+        <button onclick="saveLoanType()"
+                class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- View Chatlog Modal -->
+<div id="viewChatlogModal" class="modal-overlay">
+  <div class="modal-box bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="font-semibold text-slate-800 text-lg">Chat Log Details</h3>
+      <button onclick="closeModal('viewChatlogModal')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+    </div>
+    <div id="chatlogDetailsContent" class="overflow-y-auto max-h-[70vh]"></div>
+  </div>
+</div>
+ 
+<script src="dashboard.js"></script>
+</body>
+</html>

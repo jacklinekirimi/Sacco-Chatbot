@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AminiAssist</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+   <style>
+    html {
+    scroll-behavior: smooth;
+  }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+ 
+  </style>
+  
+
+</head>
+
+<body class="min-h-screen bg-gradient-to-r from-[#191970] via-blue-950 to-black text-white">
+
+  
+
+    <header class="w-full text-white z-50 bg-black/20 ">
+  <nav class=" max-w-7xl mx-auto px-8 flex items-center justify-start py-3 gap-[35rem]">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <img 
+        src="images/Untitled design (2).png" 
+        alt="AminiAssist logo" 
+        class="w-12 h-12 rounded-lg"
+      />
+      <span class="text-lg font-semibold tracking-wide">
+        AminiAssist
+      </span>
+    </div>
+
+    <!-- Navigation links -->
+    <ul class="flex items-center gap-32 text-base font-medium">
+      <li>
+        <a href="#Home" class="hover:text-[#4381c1] transition">
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="#Features" class="hover:text-[#4381c1] transition">
+          Features
+        </a>
+      </li>
+      <li>
+        <a href="#Contact Us" class="hover:text-[#4381c1] transition">
+          Contact Us
+        </a>
+      </li>
+    </ul>
+
+  </nav>
+</header>
+<!-- Page container -->
+  <div class="max-w-7xl mx-auto px-8 h-screen flex flex-col">
+
+    <!-- Hero section -->
+    <section id="Home" class="flex flex-1 items-center justify-between gap-12">
+
+      <!-- Left content -->
+      <div class="max-w-xl">
+        <h1 class="text-5xl font-bold mb-4">
+         <span id="typing"></span>
+        </h1>
+
+        <p class="text-lg mb-4 text-slate-300">
+          Your Smart Chatbot Assistant
+        </p>
+
+        <p class="text-slate-300 mb-8 leading-relaxed">
+          AminiAssist is your smart SACCO companion designed to help you access your financial information instantly.
+          Whether you want to check your savings, loan balance, or eligibility, AminiAssist gives you fast and accurate answers—anytime you need them.
+        </p>
+
+      <!-- Buttons -->
+<div class="flex gap-4">
+  <!-- Primary -->
+  <a href="auth/sign-up.html">
+  <button class="hover:bg-[#4381c1] text-white px-6 py-1 rounded-lg font-semibold
+   transform transition duration-300 bg-sky-500
+   hover:scale-105 hover:shadow-lg">
+    Sign up
+  </button>
+</a>
+
+
+  <!-- Secondary -->
+    <a href="auth/log-in.html">
+  <button class="border border-white/40 text-white px-6 py-1 rounded-lg font-semibold 
+  transform transition duration-300 hover:border-white hover:bg-white/10 
+  hover:scale-105 hover:shadow-lg">
+    Log in
+  </button>
+</a>
+</div>
+
+      </div>
+
+      <!-- Right illustration -->
+      <div class="flex items-center justify-center">
+        <img src="images/illustration No BG.png" alt="illustration" class="w-98 h-auto 
+        rounded-lg animate-float ">
+      </div>
+
+    </section>
+
+  </div>
+
+<!-- Features Section -->
+<section id="Features" class="w-full bg-gradient-to-r from-[#191970] via-blue-950 to-black text-white py-3">
+  <div class="max-w-7xl mx-auto px-8">
+
+    <!-- Section heading -->
+    <div class="max-w-2xl mb-16">
+      <h2 class="text-4xl font-bold mb-4">
+        About AminiAssist
+      </h2>
+      <p class="text-slate-300 text-lg">
+        AminiAssist is an intelligent SACCO chatbot that helps members access
+        services quickly and conveniently.
+      </p>
+    </div>
+
+    <!-- Feature cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+
+  <!-- Card 1 -->
+<div class="feature-card 
+  border border-white/10 rounded-xl overflow-hidden bg-white/5
+  opacity-0 translate-y-6
+  transition-all duration-700 ease-out">
+
+  <!-- Image placeholder -->
+  <div class="h-[16rem] bg-white/10 flex items-center justify-center overflow-hidden rounded-lg">
+      <img 
+    src="images/calculator.jpg" 
+    alt="calculator"
+    class="h-auto w-auto">
+     </div>
+
+        <!-- Content -->
+        <div class="p-6">
+          <h3 class="text-xl font-semibold mb-3">
+            Loan Services
+          </h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Loan eligibility check, view loan balance, and loan top-up
+            calculation.
+          </p>
+        </div>
+      </div>
+
+    <!-- Card 2 -->
+    <div class="feature-card 
+  border border-white/10 rounded-xl overflow-hidden bg-white/5
+  opacity-0 translate-y-6
+  transition-all duration-700 ease-out">
+    <!--Image Placeholder-->
+        <div class="h-[16rem] bg-white/10 flex items-center justify-center overflow-hidden rounded-lg">
+      <img 
+    src="images/Savings.jpg" 
+    alt="calculator"
+    class="h-auto w-auto">
+     </div>
+     <!-- Content -->
+        <div class="p-6">
+          <h3 class="text-xl font-semibold mb-3">
+            Savings Account Inquiries
+          </h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Instantly check the current financial status of your savings
+            account.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="feature-card 
+  border border-white/10 rounded-xl overflow-hidden bg-white/5
+  opacity-0 translate-y-6
+  transition-all duration-700 ease-out">
+          <!--Image Placeholder-->
+         <div class="h-[16rem] bg-white/10 flex items-center justify-center overflow-hidden rounded-lg">
+      <img 
+    src="images/FAQ.png" 
+    alt="calculator"
+    class="h-auto w-auto">
+     </div>
+        <!-- Content -->
+        <div class="p-6">
+          <h3 class="text-xl font-semibold mb-3">
+            General SACCO Inquiries
+          </h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Answers to all frequently asked questions about SACCO policies.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- Contact Us Section -->
+<section id="Contact Us" class="w-full bg-gradient-to-r from-[#191970] via-blue-950 to-black text-white py-24">
+  <div class="max-w-7xl mx-auto px-8">
+
+    <!-- Section heading -->
+    <div class="max-w-2xl mb-16 opacity-0 translate-y-8 transition-all duration-700 contact-heading">
+      <h2 class="text-4xl font-bold mb-4">
+        Contact Us
+      </h2>
+      <p class="text-slate-300 text-lg">
+        Have questions or need support? Reach out and we’ll help you promptly.
+      </p>
+    </div>
+
+    <!-- Contact info cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+      
+      <!-- Card 1: Email -->
+      <div class="contact-card border border-white/20 rounded-xl p-6 opacity-0 
+      translate-y-8 transition-all duration-700 hover:-translate-y-2 hover:shadow-lg">
+        <h3 class="text-xl font-semibold mb-2">Email</h3>
+        
+        <p class="text-slate-300">customercare@gmail.com</p>
+      </div>
+
+      <!-- Card 2: Phone -->
+      <div class="contact-card border border-white/20 rounded-xl p-6 opacity-0 
+      translate-y-8 transition-all duration-700 hover:-translate-y-2 hover:shadow-lg">
+        <h3 class="text-xl font-semibold mb-2">Phone</h3>
+        <p class="text-slate-300">+254 700 677 000</p>
+      </div>
+
+      <!-- Card 3: Chatbot -->
+      <div class="contact-card border border-white/20 rounded-xl p-6 opacity-0 
+      translate-y-8 transition-all duration-700 hover:-translate-y-2 hover:shadow-lg">
+        <h3 class="text-xl font-semibold mb-2">Address</h3>
+        <p class="text-slate-300">
+          Moi Avenue, Nairobi, Kenya.
+          <p class="text-slate-300">P.O Box 53131 - 00200</p>
+        </p>
+      </div>
+     <div>
+      <p> </p>
+     </div>
+    </div>
+  </div>
+</section>
+<!-- Footer -->
+<footer class="w-full bg-[#0f0f2e] text-slate-400 text-center py-6">
+  © 2026 Magereza Sacco Society Ltd. All Rights Reserved.
+</footer>
+
+<!-- Scroll Animation JS -->
+<script>
+  const contactCards = document.querySelectorAll('.contact-card');
+  const contactHeading = document.querySelector('.contact-heading');
+
+  function fadeInContact() {
+    const triggerBottom = window.innerHeight / 5 * 4;
+
+    // Heading
+    const headingTop = contactHeading.getBoundingClientRect().top;
+    if (headingTop < triggerBottom) {
+      contactHeading.classList.add('opacity-100', 'translate-y-0');
+    } else {
+      contactHeading.classList.remove('opacity-100', 'translate-y-0');
+    }
+
+    // Cards
+    contactCards.forEach((card, index) => {
+      const cardTop = card.getBoundingClientRect().top;
+
+      if (cardTop < triggerBottom) {
+        setTimeout(() => {
+          card.classList.add('opacity-100', 'translate-y-0');
+        }, index * 200); // stagger effect
+      } else {
+        card.classList.remove('opacity-100', 'translate-y-0');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', fadeInContact);
+  fadeInContact(); // run once on page load
+</script>
+
+<!--Typing effect-->
+<script>
+const text = "AminiAssist";
+const typingElement = document.getElementById("typing");
+
+const charSpeed = 230; // ms per character
+const loopDelay = 7000; // total loop interval
+
+function typeText() {
+  let i = 0;
+
+  function typeChar() {
+    if (i < text.length) {
+      typingElement.innerHTML = text.slice(0, i + 1); // type progressively
+      i++;
+      setTimeout(typeChar, charSpeed);
+    }
+    // No clearing after finishing — text stays visible
+  }
+
+  typeChar();
+}
+
+// Start typing immediately and repeat every 7 seconds
+window.addEventListener("load", () => {
+  typeText();
+  setInterval(typeText, loopDelay);
+});
+</script>
+
+<script>
+  const cards = document.querySelectorAll('.feature-card');
+
+  function revealCards() {
+    const triggerPoint = window.innerHeight * 0.75;
+
+    cards.forEach(card => {
+      const cardTop = card.getBoundingClientRect().top;
+
+      if (cardTop < triggerPoint) {
+        card.classList.add(
+          'opacity-100',
+          'translate-y-0',
+          'border-white/30'
+        );
+      } else {
+        card.classList.remove(
+          'opacity-100',
+          'translate-y-0',
+          'border-white/30'
+        );
+      }
+    });
+  }
+
+  window.addEventListener('scroll', revealCards);
+  revealCards();
+</script>
+
+
+
+
+
+</body>
+</html>

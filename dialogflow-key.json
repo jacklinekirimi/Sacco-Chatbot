@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "magerezasaccochatbot-xfjb",
+  "private_key_id": "1b37b38c1205111c8c8add4451363e7e6bd07c12",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC5PcRagMLNy/ja\n5BLkY+KtHjyZtxp/qtKFDAhZf/Z28cirp0QMF4+Bxukqv0K2bNZVOyekaymPNW2q\nxXIGq/n9ofY4l+IOS+464bHhwOj0X27zlVvz/wIn8QOLUnef3fFctShO8Re9evEM\nqDJ86rHDBHVd9+RN6i+iTUKHbwlZJ9z5AYn9eGZAsSCjbimgLpAPqake7dYFat9D\ngbQAKep7rMxFLICepfUUIqqDRKRSmBNxQeQp9D3327UAOSJS0HKrU0IGdlINvZ6b\njtiZ8zWCl7lUaRpv0uDdiSWXzHNBtFDrJOmDq8FGTlFvLyu9ojIhU+DMLZ+ZNHFi\nFsv4eedBAgMBAAECgf8Lk9Cx11pVgmoLRDXqEFQafclL0iXV1NdTeW0MKvM8e+AO\n2mVmXBKcCdKI2WtR+3tp2Eih/hCa4rv38F8wC4+USosY/mUif5xkEbcMZQIqQ8yr\nbKpSlZ2M4YNXMdBILZboNGpQhMD3Frf6EokVRZXWmnC7bsLWG8zeV/XQgSAUck4Q\nb0EUdX70vRY7WGd/2qP9br9spBxP7fr2icx/1e6fdcXRRd1r1cHZzCVrWzbAv7vm\nK6gfmcfHeRNDwHlC6QSVp1gA0eLdZtxACjh4eRoe9CikFp/8FfJ9Ju3S/TlNyJnj\nrnCApwq4bid10V6UvPzDXJRnqzWQXJFaeeosuEECgYEA6wwimi2PFjLpo5Oy8xnt\n1bmEyIs5uUjmDPNisBhdfKxXfG4LTkrePwh1Tl954Vd1KCZeYksDc+hz2iPZT8F9\nlJPQFb69e1VF/VPTgu8R0kYaPmOS9lWYphtWHK2L+lZegFLgJE0rIfGNAeIZB/m4\nJMdrPxlsK30/U6ZtVF2gy08CgYEAycEJ15SAGWoGzYjRCQIefNT5Et17jXvgJAfS\n002lhnkO+2ZmRziU2xLNaKvAoTu7IOxqnSrSU/taLw8kAlsuZizEUcUam8PcBtlT\nzX/IObuZAWzh4u7bUZCcWUuPtDs3VdO/gkUH6V0zUU2I3WIw9VRTJW7HoGLTAkr1\nLTCyQG8CgYEAuGrBC28LgUNZBTrxgMOrU7FHeYGjPLjxpt+fYsL7NsKRsdM1k6wy\nTAp6348RtbhE98eC7mQkxWBw5YqTCnyp51VCQo1xZb82Ntj6bxTcSrsuBB1kRVpL\ndqikG8Qeu7/gTZa4vkK9wNgg5oVbVmKcFF9SyiNMN6MBeMRvq236pwkCgYBtB8Zi\n25zSnyrn/k1BOgTx30JvgIQZtN0ve47ipG6Umm2PTQpu6NQBBEs/iroCKD57j2ga\nYZ7ixc456kvCfjY3/29k5Uj47sLEbMROJQU2tfv8+jOkqQKbNLRZyWzysKG530H6\ni4W4BqcKBAW35i2hFx4L968oLN/tuEaBUnSyPwKBgQDRwD8P7eNmBvPT1h2SQv4A\nIsY4F59BC2zblR4Wfvvd/S5Icxvcuj6bW+WAeHIxptEyvmPSL7sFsmRADcItpjgq\nfhQHPnPMNAOXwtmfTsJdCnuaHClh9q2kuqRH5nzlTtH+Wt4+B5OGByZdux9zHdFC\nzQX8FnTgvA8Lo6wQWypQsQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "dialogflow-webhook@magerezasaccochatbot-xfjb.iam.gserviceaccount.com",
+  "client_id": "102614270692853141812",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dialogflow-webhook%40magerezasaccochatbot-xfjb.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
